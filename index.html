@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Blacktop Bounty</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231a1220'/%3E%3Cpath d='M5 21h22l-3-7H9z' fill='%23e07a2b'/%3E%3Ccircle cx='10' cy='23' r='3' fill='%23ffd23f'/%3E%3Ccircle cx='22' cy='23' r='3' fill='%23ffd23f'/%3E%3C/svg%3E" />
+  <style>
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #e9a36b; font-family: system-ui, sans-serif; }
+    canvas { display: block; }
+    #hud { position: fixed; left: 16px; bottom: 16px; color: #fff; text-shadow: 0 1px 3px #000a; pointer-events: none; }
+    #speed { font-size: 40px; font-weight: 800; }
+    #help { position: fixed; right: 16px; bottom: 70px; color: #fff; font-size: 13px; line-height: 1.5; text-shadow: 0 1px 3px #000a; text-align: right; }
+    .hud { position: fixed; color: #fff; text-shadow: 0 1px 3px #000a; pointer-events: none; font-weight: 700; }
+    .bar { width: 220px; height: 14px; background: #0006; border: 2px solid #fff8; border-radius: 3px; overflow: hidden; }
+    .bar > div { height: 100%; width: 100%; transition: width .15s; }
+    #me { left: 16px; top: 16px; }
+    #me .label, #foe .label { font-size: 13px; margin-bottom: 4px; letter-spacing: .05em; }
+    #hp > div { background: #3fd46b; }
+    #heat { width: 120px; height: 6px; margin-top: 6px; }
+    #heat > div { background: #ffb43a; }
+    #special { height: 8px; }
+    #special > div { background: #b36bff; }
+    #energy { height: 8px; }
+    #energy > div { background: #5ab0ff; }
+    #special.ready { border-color: #e2c6ff; box-shadow: 0 0 10px #b36bff; }
+    #foe { left: 50%; top: 16px; transform: translateX(-50%); text-align: center; }
+    #foe .bar { width: 260px; height: 10px; }
+    #foe-hp > div { background: #ff5a36; }
+    #weapon { right: 16px; bottom: 16px; text-align: right; font-size: 20px; }
+    #weapon small { display: block; font-size: 12px; opacity: .8; font-weight: 500; }
+    #score { left: 16px; top: 164px; font-size: 14px; }
+    #feed { right: 16px; top: 180px; text-align: right; font-size: 14px; line-height: 1.6; }
+    #radar { position: fixed; right: 16px; top: 16px; width: 150px; height: 150px; pointer-events: none; }
+    #arrows .arrow { position: fixed; display: none; font-size: 22px; text-shadow: 0 0 4px #000; pointer-events: none; }
+    #caption { left: 50%; bottom: 96px; transform: translateX(-50%); max-width: min(90vw, 640px); text-align: center; font-size: 18px; font-weight: 600; background: #000a; padding: 6px 14px; border-radius: 6px; opacity: 0; transition: opacity .3s; }
+    #foe.boss .bar { width: 420px; height: 14px; }
+    #foe.boss #foe-hp > div { background: #ffd23f; }
+    .in-menu .hud, .in-menu #hud, .in-menu #help, .in-menu #radar, .in-menu #arrows, .selecting #radar, .selecting #arrows { display: none !important; }
+    #menu { position: fixed; inset: 0; display: grid; place-items: center; background: #0008; color: #fff; z-index: 10; padding: 16px; box-sizing: border-box; overflow-y: auto; }
+    #menu[hidden] { display: none; }
+    #menu.ending { background: linear-gradient(transparent 40%, #000c); place-items: end center; }
+    #menu .panel { background: #1a1220e6; border: 2px solid #ffd23f55; border-radius: 10px; padding: 24px 28px; width: min(520px, 100%); box-sizing: border-box; box-shadow: 0 10px 40px #0008; }
+    #menu h1 { margin: 0 0 6px; font-size: clamp(26px, 6vw, 40px); font-weight: 900; letter-spacing: .06em; color: #ffd23f; }
+    #menu .sub { margin: 0 0 14px; opacity: .85; line-height: 1.45; }
+    #menu .items { display: grid; gap: 8px; margin-top: 14px; }
+    #menu .items button { all: unset; cursor: pointer; padding: 10px 14px; border-radius: 6px; background: #ffffff14; font-weight: 700; font-size: 17px; display: flex; justify-content: space-between; gap: 12px; }
+    #menu .items button small { font-weight: 500; opacity: .85; }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+    #menu .items button:focus-visible, #menu .items button:hover { background: #ffd23f; color: #1a1220; outline: none; }
+    #menu .items button[disabled] { opacity: .4; cursor: default; }
+    #menu.controls .items button { font-size: 14px; padding: 7px 12px; }
+    #menu .form { display: grid; gap: 10px; }
+    #menu .form label { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    #menu .form input[type=range] { width: 55%; }
+    #menu table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 8px 0; }
+    #menu td, #menu th { padding: 4px 6px; text-align: left; border-bottom: 1px solid #ffffff22; }
+    #menu tr.me td { color: #ffd23f; font-weight: 800; }
+    #menu .ending-text { font-size: 17px; line-height: 1.55; }
+    #title-screen { text-align: center; }
+    #msg { left: 50%; top: 40%; transform: translate(-50%, -50%); font-size: 44px; font-weight: 900; letter-spacing: .04em; text-align: center; }
+    #msg small { display: block; font-size: 18px; font-weight: 600; }
+    #warn { left: 50%; top: 24%; transform: translateX(-50%); font-size: 28px; font-weight: 900; letter-spacing: .12em; color: #ffd23f; }
+    .selecting .hud, .selecting #hud, .selecting #help { display: none; }
+    #select { position: fixed; inset: 0; display: grid; grid-template-columns: minmax(260px, 340px) 1fr minmax(280px, 380px); gap: 16px; padding: 24px; box-sizing: border-box; color: #fff; pointer-events: none; }
+    #select[hidden] { display: none; }
+    #select header { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; pointer-events: auto; }
+    #select .options select, #select .options input { accent-color: #ffd23f; }
+    #select .options label { background: #000000b3; padding: 4px 8px; border-radius: 6px; }
+    #select .options { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 14px; font-weight: 700; text-shadow: 0 1px 3px #000a; }
+    #select .options select { font: inherit; font-weight: 600; margin-left: 4px; padding: 2px 4px; border-radius: 4px; }
+    #select h1 { margin: 0; font-size: 34px; font-weight: 900; letter-spacing: .06em; text-shadow: 0 2px 6px #0008; }
+    #select .roster { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-content: start; pointer-events: auto; }
+    #select .roster button { all: unset; cursor: pointer; padding: 10px; border-radius: 6px; background: #000000b3; border-left: 6px solid var(--c); font-size: 15px; }
+    #select .roster button span { display: block; font-size: 12px; opacity: .9; margin-top: 2px; }
+    #select .roster button[aria-selected="true"], #select .roster button:focus-visible { background: #000000a0; outline: 2px solid #fff; }
+    #select .detail { grid-column: 3; align-self: end; background: #000000a0; border-radius: 8px; padding: 16px 18px; pointer-events: auto; }
+    #select .detail h2 { margin: 0; font-size: 28px; }
+    #select .detail h3 { margin: 14px 0 0; font-size: 15px; color: #e2c6ff; }
+    #select .detail p { margin: 6px 0; font-size: 14px; line-height: 1.4; }
+    #select .cls { opacity: .8; font-size: 13px; }
+    #select table { margin-top: 8px; font-size: 13px; border-spacing: 8px 2px; margin-left: -8px; }
+    #select .pips { letter-spacing: 2px; color: #ffd23f; }
+    #select .go { margin-top: 12px; font-weight: 800; color: #ffd23f; }
+    @media (max-width: 1000px) {
+      #select { grid-template-columns: 1fr; grid-template-rows: auto auto 1fr auto; padding: 16px; gap: 10px; }
+      #select h1 { font-size: 24px; }
+      #select .roster { grid-template-columns: repeat(5, 1fr); gap: 6px; }
+      #select .roster button { padding: 6px 8px; font-size: 12px; border-left-width: 4px; }
+      #select .roster button span { display: none; }
+      #select .detail { grid-column: 1; grid-row: 4; max-width: 520px; padding: 12px 14px; }
+      #select .detail p { font-size: 13px; }
+    }
+    @media (max-width: 560px) {
+      #select .roster { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div id="hud"><div id="speed">0</div><div>km/h · <span id="fps">–</span></div></div>
+  <div id="me" class="hud"><div class="label" id="me-name">ARMOR</div><div id="hp" class="bar"><div></div></div><div id="heat" class="bar"><div></div></div><div class="label" id="special-label" style="margin-top:8px"></div><div id="special" class="bar"><div></div></div><div class="label" style="margin-top:8px" id="energy-label">ENERGY</div><div id="energy" class="bar"><div></div></div></div>
+  <div id="score" class="hud"></div>
+  <div id="foe" class="hud"><div class="label" id="foe-name"></div><div id="foe-hp" class="bar"><div></div></div></div>
+  <div id="weapon" class="hud"></div>
+  <div id="feed" class="hud"></div>
+  <div id="msg" class="hud"></div>
+  <div id="warn" class="hud" role="alert"></div>
+  <canvas id="radar" width="150" height="150" aria-hidden="true"></canvas>
+  <div id="arrows" aria-hidden="true"></div>
+  <div id="caption" class="hud" aria-live="polite"></div>
+  <div id="menu" hidden role="dialog" aria-modal="true" aria-labelledby="menu-title"></div>
+  <div id="help">W/S drive · A/D steer · Space handbrake · J jump · R reset<br>Left click gun · Right click/F weapon · Q/E switch weapon · Shift special · 1 freeze · 2 shield · 3 mine · J jump · H horn · P retro · Esc pause<br>Pad: R2/L2 drive · R1 gun · □/X weapon · △/Y special · L1 switch · B handbrake · A jump · D-pad ↑↓↑ freeze, →→↑ shield, ←←↓ mine · Start pause</div>
+  <div id="select" hidden><header><h1>CHOOSE YOUR RIDE</h1><div class="options">
+    <label>Arena <select id="opt-arena"></select></label>
+    <label>Opponents <select id="opt-bots"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option></select></label>
+    <label>Difficulty <select id="opt-difficulty"><option value="easy">Easy</option><option value="normal">Normal</option><option value="hard">Hard</option><option value="brutal">Brutal</option></select></label>
+    <label><input type="checkbox" id="opt-spectate"> Watch AI only</label>
+  </div></header><div class="roster" role="listbox" aria-label="Vehicles"></div><div class="detail" aria-live="polite"></div></div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
