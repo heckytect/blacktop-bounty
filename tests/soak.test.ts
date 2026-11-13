@@ -42,6 +42,6 @@ test(`7 bots, ${MINUTES} min unattended: nobody stuck > ${STUCK_WINDOW}s`, () =>
   const kills = match.vehicles.reduce((n, v) => n + v.kills, 0);
   console.log({ kills, relocations: match.bots.map((b) => b.relocations), deaths: match.vehicles.map((v) => `${v.def.name}:${v.kills}/${v.deaths}`), states: [...states] });
   expect(stuck.slice(0, 10)).toEqual([]);
-  expect(kills).toBeGreaterThan(10); // they actually fight
+  expect(kills).toBeGreaterThan(5); // they actually fight (M7: more armour + shields make fights longer)
   expect(states).toContain('engage');
 }, 300_000);

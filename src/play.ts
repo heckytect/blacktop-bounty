@@ -5,7 +5,9 @@ import { Hud } from './hud';
 import { Match, RESPAWN_DELAY, type MatchOptions, type MatchResult } from './game';
 import { Survival } from './modes';
 import { Fx } from './fx';
-import { createSky } from './scenery';
+import { createSky, outskirts } from './scenery';
+import { applySky, applySurfaces, createPost, horizonColor, loadSky, TILE } from './look';
+import { ARENAS } from './data/arenas';
 import { wheelLayout, wheelY } from './data/vehicles';
 import type { GameAudio } from './audio';
 import type { Menus } from './menus';
@@ -38,31 +40,50 @@ const SUN_OFFSET = new THREE.Vector3(30, 60, 20);
 const RIGHT = new THREE.Vector3(0, 0, 1);
 
 /** Run one match to its end (or until the player quits from the pause menu). */
-export function playMatch(app: App, opts: MatchOptions, mode: Mode): Promise<PlayResult> {
+export async function playMatch(app: App, opts: MatchOptions, mode: Mode): Promise<PlayResult> {
   const { renderer, camera, audio, menus, retro, keys } = app;
   const settings = () => app.settings;
+  const def = ARENAS.find((a) => a.id === opts.arena) ?? ARENAS[0];
+  const hdr = await loadSky(def.theme.hdri); // the loading card is up while this downloads
 
   // --- scene ----------------------------------------------------------------
   const scene = new THREE.Scene();
   const match = new Match(scene, opts);
   const { player, combat, arena } = match;
   const theme = arena.theme;
-  scene.background = new THREE.Color(theme.sky);
-  scene.fog = new THREE.Fog(theme.sky, theme.fogNear, theme.fogFar);
-  scene.add(new THREE.HemisphereLight(theme.hemiSky, theme.hemiGround, theme.hemiIntensity));
-  const sun = new THREE.DirectionalLight(theme.sun, theme.sunIntensity);
+  // Modern look: HDRI sky + image-based lighting, ACES tone mapping, soft shadows (see look.ts).
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = theme.exposure;
+  applySky(renderer, scene, hdr, 0.9);
+  const haze = horizonColor(hdr).multiplyScalar(0.75);
+  scene.fog = new THREE.Fog(haze, theme.fogNear * 3.5, theme.fogFar * 3.2);
+  scene.add(new THREE.HemisphereLight(theme.hemiSky, theme.hemiGround, theme.hemiIntensity * 0.3));
+  const sun = new THREE.DirectionalLight(theme.sun, theme.sunIntensity * 1.5);
   const shadows = settings().graphics !== 'low';
   renderer.shadowMap.enabled = shadows;
+  renderer.shadowMap.type = THREE.PCFShadowMap; // soft via shadow.radius (PCFSoft was removed upstream)
   sun.castShadow = shadows;
   const mapSize = settings().graphics === 'high' ? 2048 : 1024;
   sun.shadow.mapSize.set(mapSize, mapSize);
-  Object.assign(sun.shadow.camera, { left: -40, right: 40, top: 40, bottom: -40, far: 200 });
+  sun.shadow.bias = -0.0004;
+  sun.shadow.normalBias = 0.03;
+  sun.shadow.radius = 3;
+  Object.assign(sun.shadow.camera, { left: -60, right: 60, top: 60, bottom: -60, far: 220 });
   scene.add(sun, sun.target);
-  camera.far = theme.fogFar + 50;
+  camera.far = theme.fogFar * 3.2 + 120;
   camera.add(audio.listener);
   scene.add(camera);
-  const sky = createSky(theme, SUN_OFFSET, { radius: camera.far * 0.9, mesas: arena.def.horizon !== 'none' });
+  const sky = createSky(theme, SUN_OFFSET, { radius: camera.far * 0.85, mesas: arena.def.horizon !== 'none', dome: false, haze });
   scene.add(sky.group);
+  if (arena.def.walls !== false) {
+    const ring = outskirts(arena.halfSize, 0xc8b49a, TILE[theme.surfaces.ground]);
+    ring.userData.surface = theme.surfaces.ground;
+    scene.add(ring);
+  }
+  applySurfaces(scene);
+  const post = createPost(renderer, scene, camera, settings().graphics);
+  const resizePost = () => post.setSize(innerWidth, innerHeight);
+  addEventListener('resize', resizePost);
 
   const fx = new Fx(scene);
   combat.particles = fx;
@@ -180,7 +201,7 @@ export function playMatch(app: App, opts: MatchOptions, mode: Mode): Promise<Pla
   const speedEl = document.getElementById('speed')!;
   const fpsEl = document.getElementById('fps')!;
   const warnEl = document.getElementById('warn')!;
-  const clock = new THREE.Clock();
+  const clock = new THREE.Timer();
   let acc = 0;
   let frames = 0;
   let fpsTime = 0;
@@ -196,6 +217,8 @@ export function playMatch(app: App, opts: MatchOptions, mode: Mode): Promise<Pla
       removeEventListener('keydown', onKey);
       removeEventListener('keydown', onTab);
       removeEventListener('resize', resizeFx);
+      removeEventListener('resize', resizePost);
+      post.dispose();
       audio.setEngine(null);
       camera.remove(audio.listener);
       warnEl.textContent = '';
@@ -226,7 +249,7 @@ export function playMatch(app: App, opts: MatchOptions, mode: Mode): Promise<Pla
         if (pick === 'restart') return finish(true, true);
         break;
       }
-      clock.getDelta(); // don't count the pause as frame time
+      clock.update(); // don't count the pause as frame time
       paused = false;
     };
     const onKey = (e: KeyboardEvent) => {
@@ -239,6 +262,7 @@ export function playMatch(app: App, opts: MatchOptions, mode: Mode): Promise<Pla
     addEventListener('keydown', onKey);
 
     renderer.setAnimationLoop(() => {
+      clock.update();
       const dt = Math.min(clock.getDelta(), 0.1);
       const pad = firstGamepad();
       const start = !!pad?.buttons[9]?.pressed; // Options/Start pauses
@@ -285,7 +309,8 @@ export function playMatch(app: App, opts: MatchOptions, mode: Mode): Promise<Pla
       });
       updateCamera(dt);
       renderer.info.reset();
-      retro.render(renderer, scene, camera);
+      if (retro.enabled) retro.render(renderer, scene, camera);
+      else post.render();
 
       const lim = arena.halfSize - 12;
       const nearEdge = focus.alive && (Math.abs(focus.position.x) > lim || Math.abs(focus.position.z) > lim);

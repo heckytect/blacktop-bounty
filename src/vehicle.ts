@@ -337,7 +337,7 @@ export function buildVehicleMesh(def: VehicleDef) {
   const model = vehicleModel(def.id);
   if (model) group.add(cloneModel(model.body));
   else for (const p of def.parts) {
-    const mat = new THREE.MeshLambertMaterial({ color: p.color, flatShading: true, emissive: p.glow ? p.color : 0x000000 });
+    const mat = new THREE.MeshStandardMaterial({ color: p.color, roughness: 0.45, metalness: 0.2, flatShading: true, emissive: p.glow ? p.color : 0x000000, emissiveIntensity: p.glow ? 2 : 0 });
     const m = new THREE.Mesh(new THREE.BoxGeometry(...p.size), mat);
     m.position.set(...p.pos);
     m.castShadow = true;
@@ -346,8 +346,8 @@ export function buildVehicleMesh(def: VehicleDef) {
   const tire = new THREE.CylinderGeometry(def.wheelR, def.wheelR, 0.35, 12);
   tire.rotateX(Math.PI / 2); // axle along Z
   const hub = new THREE.BoxGeometry(def.wheelR * 0.8, def.wheelR * 0.85, 0.1); // makes spin visible
-  const dark = new THREE.MeshLambertMaterial({ color: 0x222222, flatShading: true });
-  const paint = new THREE.MeshLambertMaterial({ color: def.color, flatShading: true });
+  const dark = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.9 });
+  const paint = new THREE.MeshStandardMaterial({ color: def.color, roughness: 0.4, metalness: 0.2 });
   for (const [x, z] of wheelLayout(def)) {
     const steerPivot = new THREE.Object3D();
     steerPivot.name = 'wheel';

@@ -26,6 +26,8 @@ OUT = os.path.join(ROOT, 'public', 'assets', 'vehicles')
 BLEND = os.path.join(ROOT, 'blender', 'vehicles.blend')
 
 GLASS, DARK, CHROME = 0x3A6F80, 0x222222, 0xC9CCD1
+BEVEL_SEGMENTS = 3  # rounded edges
+SHARP_ANGLE = 35  # degrees
 HEADLIGHT, TAILLIGHT = 0xFFF3C4, 0xFF2A2A
 
 
@@ -79,9 +81,9 @@ class Builder:
         if bevel > 0:
             edges = list({e for v in verts for e in v.link_edges})
             try:
-                bmesh.ops.bevel(self.bm, geom=edges, offset=bevel, segments=1, affect='EDGES', profile=0.5)
+                bmesh.ops.bevel(self.bm, geom=edges, offset=bevel, segments=BEVEL_SEGMENTS, affect='EDGES', profile=0.5)
             except TypeError:
-                bmesh.ops.bevel(self.bm, geom=edges, offset=bevel, segments=1, vertex_only=False, profile=0.5)
+                bmesh.ops.bevel(self.bm, geom=edges, offset=bevel, segments=BEVEL_SEGMENTS, vertex_only=False, profile=0.5)
 
     def box(self, size, centre, hexc, glow=False, taper=0.0, bevel=None):
         """size/centre in game space (w along X, h along Y, d along Z)."""
@@ -94,7 +96,7 @@ class Builder:
                 y *= 1 - taper * 0.5
             v.co = Vector((x, y, z)) + g2b(*centre)
         if bevel is None:
-            bevel = min(0.08, min(size) * 0.12)
+            bevel = min(0.16, min(size) * 0.2)  # rounded panels for the modern look
         self._finish(verts, self.slot(hexc, glow), bevel)
 
     def cyl(self, radius, length, centre, axis, hexc, segments=12, glow=False, half=False):
@@ -116,8 +118,14 @@ class Builder:
         self.bm.free()
         for m in self.mats:
             mesh.materials.append(m)
+        # Smooth shading, but keep edges sharper than SHARP_ANGLE crisp (exported as split normals).
         for p in mesh.polygons:
-            p.use_smooth = False
+            p.use_smooth = True
+        try:
+            mesh.set_sharp_from_angle(angle=math.radians(SHARP_ANGLE))
+        except AttributeError:  # Blender < 4.1
+            mesh.use_auto_smooth = True
+            mesh.auto_smooth_angle = math.radians(SHARP_ANGLE)
         obj = bpy.data.objects.new(name, mesh)
         coll.objects.link(obj)
         return obj
@@ -164,15 +172,15 @@ def _build_parts(v, coll):
                 b.box((0.14, 0.1, 0.16), (gx + gw / 2 - 0.1, gy - gh * 0.25, gz + s * (gd / 2 + 0.1)), DARK, bevel=0.02)
         for w in v['wheels']:
             out = 1 if w['z'] > 0 else -1
-            b.cyl(wr + 0.1, 0.38, (w['x'], w['y'], w['z'] - out * 0.02), 'z', v['color'], segments=12, half=True)
+            b.cyl(wr + 0.1, 0.38, (w['x'], w['y'], w['z'] - out * 0.02), 'z', v['color'], segments=20, half=True)
     body = b.to_object('body', coll)
 
     names = {(True, -1): 'wheel_FL', (True, 1): 'wheel_FR', (False, -1): 'wheel_RL', (False, 1): 'wheel_RR'}
     for w in v['wheels']:
         wb = Builder()
-        wb.cyl(wr, 0.34, (0, 0, 0), 'z', DARK, segments=16)
-        wb.cyl(wr * 0.62, 0.36, (0, 0, 0), 'z', CHROME, segments=12)
-        wb.cyl(wr * 0.22, 0.38, (0, 0, 0), 'z', v['color'], segments=8)
+        wb.cyl(wr, 0.34, (0, 0, 0), 'z', DARK, segments=24)
+        wb.cyl(wr * 0.62, 0.36, (0, 0, 0), 'z', CHROME, segments=16)
+        wb.cyl(wr * 0.22, 0.38, (0, 0, 0), 'z', v['color'], segments=12)
         for k in range(4):  # spokes make the spin readable
             a = k * math.pi / 4
             wb.box((wr * 1.1, 0.06, 0.37), (0, 0, 0), DARK, bevel=0.0)

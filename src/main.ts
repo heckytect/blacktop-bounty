@@ -37,7 +37,8 @@ const app: App = {
     const s = app.settings;
     app.audio.setVolumes(s.music, s.sfx);
     app.retro.enabled = s.retro;
-    renderer.setPixelRatio(s.graphics === 'high' ? Math.min(devicePixelRatio, 2) : 1);
+    // Post-processing runs per pixel, so "high" caps density at 1.25× (SMAA handles the edges).
+    renderer.setPixelRatio(s.graphics === 'high' ? Math.min(devicePixelRatio, 1.25) : 1);
     saveSettings(s);
   },
 };

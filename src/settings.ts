@@ -31,7 +31,7 @@ export interface Settings {
 
 const KEY = 'blacktop.options';
 const reducedMotion = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
-export const DEFAULTS: Settings = { music: 0.6, sfx: 0.8, graphics: 'high', retro: false, shake: !reducedMotion, bindings: DEFAULT_BINDINGS };
+export const DEFAULTS: Settings = { music: 0.6, sfx: 0.8, graphics: 'medium', retro: false, shake: !reducedMotion, bindings: DEFAULT_BINDINGS };
 
 export function loadSettings(): Settings {
   try {

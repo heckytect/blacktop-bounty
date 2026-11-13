@@ -118,7 +118,7 @@ export class Menus {
         <div class="form">
           <label>Music <input type="range" id="set-music" min="0" max="100" value="${pct(s.music)}"></label>
           <label>Sound effects <input type="range" id="set-sfx" min="0" max="100" value="${pct(s.sfx)}"></label>
-          <label>Graphics <select id="set-graphics">${(['low', 'medium', 'high'] as Graphics[]).map((g) => `<option value="${g}" ${g === s.graphics ? 'selected' : ''}>${g[0].toUpperCase() + g.slice(1)}</option>`).join('')}</select></label>
+          <label title="Low: no post effects · Medium: bloom, grading, shadows · High: adds ambient occlusion and SMAA">Graphics <select id="set-graphics">${(['low', 'medium', 'high'] as Graphics[]).map((g) => `<option value="${g}" ${g === s.graphics ? 'selected' : ''}>${g[0].toUpperCase() + g.slice(1)}</option>`).join('')}</select></label>
           <label><input type="checkbox" id="set-retro" ${s.retro ? 'checked' : ''}> Retro pixel mode (P)</label>
           <label><input type="checkbox" id="set-shake" ${s.shake ? 'checked' : ''}> Screen shake</label>
         </div>`;

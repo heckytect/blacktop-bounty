@@ -21,6 +21,8 @@ async function axe(page: Page, screen: string) {
 }
 
 test('loads, starts a deathmatch, runs, pauses and quits with no console errors', async ({ page }) => {
+  // Headless Chrome renders in software: use the Low preset (no post FX) so the flow test isn't GPU-bound.
+  await page.addInitScript(() => localStorage.setItem('blacktop.options', JSON.stringify({ graphics: 'low' })));
   const errors = watchErrors(page);
   await page.goto('/');
   await expect(menuTitle(page)).toHaveText('BLACKTOP BOUNTY', { timeout: 30_000 });

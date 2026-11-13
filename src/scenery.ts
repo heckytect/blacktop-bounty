@@ -29,7 +29,7 @@ export interface Sky {
   follow(camera: THREE.Camera): void;
 }
 
-export function createSky(theme: ArenaTheme, sunDir: THREE.Vector3, opts: { radius: number; mesas: boolean }): Sky {
+export function createSky(theme: ArenaTheme, sunDir: THREE.Vector3, opts: { radius: number; mesas: boolean; dome?: boolean; haze?: THREE.Color }): Sky {
   const group = new THREE.Group();
   const horizon = new THREE.Color(theme.sky);
   // Darker, cooler zenith derived from the horizon colour.
@@ -45,12 +45,13 @@ export function createSky(theme: ArenaTheme, sunDir: THREE.Vector3, opts: { radi
     }),
   );
   dome.renderOrder = -2;
-  group.add(dome);
+  if (opts.dome !== false) group.add(dome);
 
   if (opts.mesas) {
     // Ring of flat-topped buttes, tinted 55% toward the horizon so they sit in the haze.
-    const rock = new THREE.Color(theme.hemiGround).lerp(horizon, 0.55);
-    const mat = new THREE.MeshBasicMaterial({ color: rock, fog: false });
+    const haze = opts.haze ?? horizon;
+    const rock = new THREE.Color(theme.hemiGround).lerp(haze, 0.45);
+    const mat = new THREE.MeshStandardMaterial({ color: rock, roughness: 1, flatShading: true, fog: false });
     const r = opts.radius * 0.92;
     let seed = 7;
     const rand = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
@@ -72,6 +73,22 @@ export function createSky(theme: ArenaTheme, sunDir: THREE.Vector3, opts: { radi
       group.position.set(camera.position.x, 0, camera.position.z);
     },
   };
+}
+
+/** Terrain ring around the arena out to the horizon (visual only), so there's no void past the edge. */
+export function outskirts(halfSize: number, color: number, tile: number) {
+  const outer = 900;
+  const shape = new THREE.Shape([new THREE.Vector2(-outer, -outer), new THREE.Vector2(outer, -outer), new THREE.Vector2(outer, outer), new THREE.Vector2(-outer, outer)]);
+  const h = halfSize + 9;
+  shape.holes.push(new THREE.Path([new THREE.Vector2(-h, -h), new THREE.Vector2(-h, h), new THREE.Vector2(h, h), new THREE.Vector2(h, -h)]));
+  const g = new THREE.ShapeGeometry(shape).rotateX(-Math.PI / 2);
+  const pos = g.getAttribute('position');
+  const uv = g.getAttribute('uv');
+  for (let i = 0; i < pos.count; i++) uv.setXY(i, pos.getX(i) / tile, pos.getZ(i) / tile);
+  const m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ color: new THREE.Color(color).lerp(new THREE.Color(1, 1, 1), 0.5), roughness: 1 }));
+  m.position.y = -0.03;
+  m.receiveShadow = true;
+  return m;
 }
 
 /** Subdivided ground overlay with dusty colour variation (vertex colours, no textures). */
