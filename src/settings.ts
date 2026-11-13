@@ -25,17 +25,19 @@ export interface Settings {
   sfx: number;
   graphics: Graphics;
   retro: boolean;
-  shake: boolean;
+  shake: number; // 0..1 screen-shake strength
+  rumble: number; // 0..1 controller vibration
   bindings: Record<Action, string[]>;
 }
 
 const KEY = 'blacktop.options';
 const reducedMotion = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
-export const DEFAULTS: Settings = { music: 0.6, sfx: 0.8, graphics: 'medium', retro: false, shake: !reducedMotion, bindings: DEFAULT_BINDINGS };
+export const DEFAULTS: Settings = { music: 0.6, sfx: 0.8, graphics: 'medium', retro: false, shake: reducedMotion ? 0 : 1, rumble: 1, bindings: DEFAULT_BINDINGS };
 
 export function loadSettings(): Settings {
   try {
     const s = JSON.parse(localStorage.getItem(KEY) ?? '{}');
+    if (typeof s.shake === 'boolean') s.shake = s.shake ? 1 : 0; // v1 stored an on/off toggle
     return { ...DEFAULTS, ...s, bindings: { ...DEFAULT_BINDINGS, ...(s.bindings ?? {}) } };
   } catch {
     return structuredClone(DEFAULTS);

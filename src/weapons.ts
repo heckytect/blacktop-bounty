@@ -96,6 +96,7 @@ const SHAPE_SCALE: Record<ProjectileDef['shape'], [number, number, number]> = {
 };
 
 export class Combat {
+  /** Trauma from blasts near the camera target, drained each frame by the feel layer (feel.ts). */
   shake = 0;
   /** Camera target; explosions near it shake the screen. */
   focus: Vehicle | null = null;
@@ -106,6 +107,8 @@ export class Combat {
   onStaticHit?: (c: RAPIER.Collider, damage: number, point: THREE.Vector3, from: Vehicle | null) => void;
   /** Sound hook (browser only). `by` is the shooter/attacker when there is one. */
   onSound?: (kind: 'gun' | 'launch' | 'explode' | 'hit' | 'laser', at: THREE.Vector3, by: Vehicle | null, size?: number) => void;
+  /** Any damage that landed (browser feel layer listens). */
+  onHurt?: (victim: Vehicle, amount: number, from: Vehicle | null, killed: boolean) => void;
   /** Boss special asks the match for minions. */
   onSummon?: (owner: Vehicle, count: number) => void;
   /** Any explosion (arena props listen). */
@@ -198,7 +201,6 @@ export class Combat {
         this.blast(v.position.clone().add(new THREE.Vector3().randomDirection().multiplyScalar(1.2)), 0.6, 0x5aa0ff, 0.15);
       }
     }
-    this.shake = Math.max(0, this.shake - dt * 2);
   }
 
   /** srcPos lets front-shielded cars (Wheelie Barrage) ignore hits from ahead. Returns damage dealt. */
@@ -215,6 +217,7 @@ export class Combat {
     }
     v.hp -= amount;
     if (from && from !== v) this.onSound?.('hit', v.position, from);
+    this.onHurt?.(v, amount, from, v.hp <= 0);
     if (v.hp > 0) return amount;
     v.hp = 0;
     this.blast(v.position, 6, 0xffa040);

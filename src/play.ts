@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import RAPIER from '@dimforge/rapier3d-compat';
+import { Feel, tierFor } from './feel';
 import { firstGamepad, readInput, type DriveInput } from './input';
 import type { Vehicle } from './vehicle';
 import { Hud } from './hud';
@@ -104,6 +106,25 @@ export async function playMatch(app: App, opts: MatchOptions, mode: Mode): Promi
     if (kind === 'gun' && by !== player && gunTick++ % 3) return; // thin out enemy gunfire (16-voice cap)
     audio.sfx(kind, by === player && kind === 'gun' ? undefined : at, 1, 1);
   };
+  // --- feel: trauma shake, hit-stop, rumble (AAA_PLAN §3.1) -------------------
+  const feel = new Feel();
+  feel.slowMo = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let pad: Gamepad | null = null;
+  let lastSmall = 0;
+  combat.onHurt = (victim, amount, from, killed) => {
+    const mine = victim === focus;
+    if (!mine && from !== focus) return;
+    if (amount < 1 && !killed) {
+      if (mine) feel.addTrauma(0.01); // fire zones, Harvester: per-step chip damage hums, doesn't rumble
+      return;
+    }
+    const tier = tierFor(amount, victim.maxHp, killed);
+    const t = mine || killed ? tier : tier === 'large' ? 'medium' : 'small'; // dealing a hit lands lighter than taking one
+    if (t === 'small' && performance.now() - lastSmall < 90) return;
+    if (t === 'small') lastSmall = performance.now();
+    feel.hit(t, pad);
+  };
+
   match.onFeed = (text, v) => {
     if (v === null || v === player) hud.feed(text);
     if (v && v === player) audio.sfx('pickup');
@@ -127,25 +148,48 @@ export async function playMatch(app: App, opts: MatchOptions, mode: Mode): Promi
   };
   addEventListener('keydown', onTab);
 
+  // Chase camera (AAA_PLAN §3.1): exponential spring, velocity lead, FOV by speed, pull-in past walls.
   const camPos = new THREE.Vector3().copy(focus.position).add(new THREE.Vector3(-10, 5, 0));
+  const look = focus.position.clone();
   const tmpFwd = new THREE.Vector3();
+  const tmp = new THREE.Vector3();
+  const pivot = new THREE.Vector3();
+  let camDist = 10;
+  const solidOnly = (c: RAPIER.Collider) => !c.parent()?.isDynamic(); // walls and props, not cars or debris
   const updateCamera = (dt: number) => {
     const car = focus;
     tmpFwd.set(1, 0, 0).applyQuaternion(car.mesh.quaternion).setY(0);
     if (tmpFwd.lengthSq() < 1e-4) tmpFwd.set(1, 0, 0);
     tmpFwd.normalize();
+    const p = car.mesh.position;
     const back = 7 + car.def.half.x;
-    const target = car.mesh.position.clone().addScaledVector(tmpFwd, -back).setY(car.mesh.position.y + 3 + car.def.half.y);
-    camPos.lerp(target, 1 - Math.exp(-6 * dt));
-    camera.position.copy(camPos);
-    if (combat.shake > 0 && settings().shake) camera.position.add(new THREE.Vector3().randomDirection().multiplyScalar(combat.shake * 0.6));
-    camera.lookAt(car.mesh.position.clone().addScaledVector(tmpFwd, 4).setY(car.mesh.position.y + 1));
-    const speedFov = 70 + Math.min(Math.abs(car.speed), 40) * 0.25;
+    tmp.copy(p).addScaledVector(tmpFwd, -back).setY(p.y + 3 + car.def.half.y);
+    camPos.lerp(tmp, 1 - Math.exp(-8 * dt));
+    // Pull in when a wall is between car and camera: snap in, ease back out.
+    pivot.copy(p).setY(p.y + 1.2);
+    tmp.copy(camPos).sub(pivot);
+    const len = tmp.length();
+    tmp.divideScalar(len || 1);
+    const hit = match.world.castRay(new RAPIER.Ray(pivot, tmp), len, true, undefined, undefined, undefined, undefined, solidOnly);
+    const want = hit ? Math.max(1.5, hit.timeOfImpact - 0.4) : len;
+    camDist = want < camDist ? want : camDist + (want - camDist) * (1 - Math.exp(-3 * dt));
+    camera.position.copy(pivot).addScaledVector(tmp, camDist);
+    // Look slightly ahead of where the car is going (0.25 s of velocity).
+    const lv = car.alive ? car.body.linvel() : { x: 0, y: 0, z: 0 };
+    tmp.copy(p).addScaledVector(tmpFwd, 4).add({ x: lv.x * 0.25, y: 0, z: lv.z * 0.25 } as THREE.Vector3).setY(p.y + 1);
+    look.lerp(tmp, 1 - Math.exp(-12 * dt));
+    camera.up.set(0, 1, 0);
+    camera.lookAt(look);
+    const o = feel.offset();
+    camera.translateX(o.x);
+    camera.translateY(o.y);
+    camera.rotateZ(o.roll);
+    const speedFov = 70 + 12 * Math.min(Math.abs(car.speed) / 40, 1);
     camera.fov += (speedFov - camera.fov) * (1 - Math.exp(-4 * dt));
     camera.aspect = innerWidth / innerHeight;
     camera.updateProjectionMatrix();
-    sun.position.copy(car.mesh.position).add(SUN_OFFSET);
-    sun.target.position.copy(car.mesh.position);
+    sun.position.copy(p).add(SUN_OFFSET);
+    sun.target.position.copy(p);
     sky.follow(camera);
   };
 
@@ -209,6 +253,7 @@ export async function playMatch(app: App, opts: MatchOptions, mode: Mode): Promi
   let endTimer = -1;
   let prevHorn = false;
   let prevStart = true;
+  let fallSpeed = 0;
   renderer.info.autoReset = false;
 
   return new Promise<PlayResult>((resolve) => {
@@ -264,19 +309,32 @@ export async function playMatch(app: App, opts: MatchOptions, mode: Mode): Promi
     renderer.setAnimationLoop(() => {
       clock.update();
       const dt = Math.min(clock.getDelta(), 0.1);
-      const pad = firstGamepad();
+      pad = firstGamepad();
+      // Hit-stop / kill slow-mo scale simulation time only; feel timers run on real time.
+      const simDt = paused ? 0 : dt * feel.update(dt);
+      feel.shake = app.settings.shake;
+      feel.rumble = app.settings.rumble;
+      feel.addTrauma(combat.shake); // blasts near the camera target
+      combat.shake = 0;
       const start = !!pad?.buttons[9]?.pressed; // Options/Start pauses
       if (start && !prevStart) pause();
       prevStart = start;
 
       let input: DriveInput | null = null;
       if (!paused) {
-        acc += dt;
+        acc += simDt;
         input = readInput(keys, pad, app.settings.bindings);
+        const wasAir = focus.alive && !focus.grounded;
         while (acc >= STEP) {
           match.step(STEP, input);
           survival?.update(STEP);
           acc -= STEP;
+          if (focus.alive && !focus.grounded) fallSpeed = Math.min(fallSpeed, focus.body.linvel().y);
+        }
+        // Hard landing (falling faster than 9 m/s) is a medium hit.
+        if (wasAir && focus.alive && focus.grounded) {
+          if (fallSpeed < -9) feel.hit('medium', pad);
+          fallSpeed = 0;
         }
         if (match.result && endTimer < 0) {
           endTimer = END_DELAY;
@@ -288,7 +346,7 @@ export async function playMatch(app: App, opts: MatchOptions, mode: Mode): Promi
       if (player && input && !paused) {
         if (input.horn && !prevHorn) audio.sfx('horn', undefined, 1, 1.3 - Math.min(0.6, player.body.mass() / 3000));
         prevHorn = input.horn;
-        audio.setEngine(player.alive ? player.speed : null, input.throttle);
+        audio.setEngine(player.alive ? player.speed : null, input.throttle, player.body.mass());
       }
 
       match.vehicles.forEach((v) => v.render(acc / STEP));
@@ -326,7 +384,7 @@ export async function playMatch(app: App, opts: MatchOptions, mode: Mode): Promi
     });
 
     // Exposed for debugging / automated smoke checks.
-    Object.assign(window, { __game: { match, car: player, vehicles: match.vehicles, combat, survival, finish } });
+    Object.assign(window, { __game: { match, car: player, vehicles: match.vehicles, combat, survival, finish, feel } });
   });
 }
 

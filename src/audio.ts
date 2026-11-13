@@ -60,6 +60,21 @@ function patterns(t: Track) {
 export type Sfx = 'gun' | 'launch' | 'explode' | 'hit' | 'pickup' | 'laser' | 'horn' | 'click' | 'win' | 'lose';
 const MAX_VOICES = 16;
 
+type EngineLayer = { osc: OscillatorNode; filter: BiquadFilterNode; gain: GainNode };
+
+/** Top speed (m/s) of each virtual gear. */
+export const GEARS = [8, 15, 23, 32, 44];
+
+/** Engine RPM 0..1 and gear for a ground speed. RPM drops at each upshift, like a real gearbox. */
+export function engineRpm(speed: number, throttle: number) {
+  const gear = GEARS.findIndex((top) => speed < top);
+  const g = gear < 0 ? GEARS.length - 1 : gear;
+  const lo = g === 0 ? 0 : GEARS[g - 1];
+  const x = Math.min(1, (speed - lo) / (GEARS[g] - lo));
+  const rpm = g === 0 ? 0.15 + 0.85 * x : 0.35 + 0.65 * x;
+  return { gear: g, rpm: Math.max(rpm, 0.15 + 0.3 * throttle * (g === 0 ? 1 : 0)) }; // revs on the spot
+}
+
 export class GameAudio {
   readonly listener = new THREE.AudioListener();
   private readonly ctx: AudioContext;
@@ -71,7 +86,7 @@ export class GameAudio {
   readonly stats = { sfx: 0, notes: 0 };
   private timer: ReturnType<typeof setInterval> | null = null;
   private track: string | null = null;
-  private engine: { osc: OscillatorNode; sub: OscillatorNode; filter: BiquadFilterNode; gain: GainNode } | null = null;
+  private engine: { out: GainNode; idle: EngineLayer; mid: EngineLayer; high: EngineLayer; detune: OscillatorNode } | null = null;
 
   constructor() {
     this.ctx = this.listener.context as AudioContext;
@@ -246,36 +261,60 @@ export class GameAudio {
     }
   }
 
-  /** Player engine: pitch follows speed, volume follows throttle (spec §9). Pass null to silence. */
-  setEngine(speed: number | null, throttle = 0) {
+  /**
+   * Player engine (AAA_PLAN §3.6): a virtual gearbox drives RPM, and three synth layers (idle rumble,
+   * mid growl, high whine) crossfade by RPM. Heavier cars sit lower. Pass null to silence.
+   */
+  setEngine(speed: number | null, throttle = 0, mass = 1500) {
     if (speed === null || this.ctx.state !== 'running') {
-      if (this.engine) {
-        this.engine.gain.gain.setTargetAtTime(0, this.ctx.currentTime, 0.1);
-      }
+      this.engine?.out.gain.setTargetAtTime(0, this.ctx.currentTime, 0.1);
       return;
     }
+    const c = this.ctx;
     if (!this.engine) {
-      const osc = this.ctx.createOscillator();
-      const sub = this.ctx.createOscillator();
-      osc.type = 'sawtooth';
-      sub.type = 'square';
-      const filter = this.ctx.createBiquadFilter();
-      filter.type = 'lowpass';
-      filter.frequency.value = 500;
-      const gain = this.ctx.createGain();
-      gain.gain.value = 0;
-      osc.connect(filter);
-      sub.connect(filter);
-      filter.connect(gain).connect(this.sfxGain);
-      osc.start();
-      sub.start();
-      this.engine = { osc, sub, filter, gain };
+      const out = c.createGain();
+      out.gain.value = 0;
+      out.connect(this.sfxGain);
+      const layer = (type: OscillatorType, filterType: BiquadFilterType, q = 0.7) => {
+        const osc = c.createOscillator();
+        osc.type = type;
+        const filter = c.createBiquadFilter();
+        filter.type = filterType;
+        filter.Q.value = q;
+        const gain = c.createGain();
+        gain.gain.value = 0;
+        osc.connect(filter).connect(gain).connect(out);
+        osc.start();
+        return { osc, filter, gain };
+      };
+      const high = layer('sawtooth', 'bandpass', 1.5);
+      const detune = c.createOscillator(); // second whine voice, slightly detuned for width
+      detune.type = 'sawtooth';
+      detune.detune.value = 7;
+      detune.connect(high.filter);
+      detune.start();
+      this.engine = { out, idle: layer('square', 'lowpass'), mid: layer('sawtooth', 'lowpass'), high, detune };
     }
-    const t = this.ctx.currentTime;
-    const hz = 38 + Math.abs(speed) * 2.4 + throttle * 12;
-    this.engine.osc.frequency.setTargetAtTime(hz, t, 0.05);
-    this.engine.sub.frequency.setTargetAtTime(hz / 2, t, 0.05);
-    this.engine.filter.frequency.setTargetAtTime(300 + throttle * 900 + Math.abs(speed) * 10, t, 0.05);
-    this.engine.gain.gain.setTargetAtTime(0.04 + throttle * 0.06, t, 0.08);
+    const e = this.engine;
+    const t = c.currentTime;
+    const { rpm } = engineRpm(Math.abs(speed), throttle);
+    const pitch = Math.min(1.35, Math.max(0.75, 1400 / mass));
+    const f = (30 + rpm * 110) * pitch;
+    const idle = Math.max(0, 1 - rpm / 0.45);
+    const high = Math.min(1, Math.max(0, (rpm - 0.55) / 0.35));
+    const mid = Math.max(0, 1 - idle - high);
+    const set = (p: AudioParam, v: number, k = 0.04) => p.setTargetAtTime(v, t, k);
+    set(e.idle.osc.frequency, f / 2);
+    set(e.idle.filter.frequency, 220);
+    set(e.idle.gain.gain, idle * 0.9);
+    set(e.mid.osc.frequency, f);
+    set(e.mid.filter.frequency, 350 + throttle * 900 + rpm * 400);
+    set(e.mid.gain.gain, mid * 0.8);
+    set(e.high.osc.frequency, f * 2);
+    set(e.detune.frequency, f * 2);
+    set(e.high.filter.frequency, f * 4);
+    set(e.high.gain.gain, high * 0.5);
+    set(e.out.gain, 0.05 + throttle * 0.06, 0.08); // load: louder on throttle
   }
+
 }

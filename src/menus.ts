@@ -120,7 +120,8 @@ export class Menus {
           <label>Sound effects <input type="range" id="set-sfx" min="0" max="100" value="${pct(s.sfx)}"></label>
           <label title="Low: no post effects · Medium: bloom, grading, shadows · High: adds ambient occlusion and SMAA">Graphics <select id="set-graphics">${(['low', 'medium', 'high'] as Graphics[]).map((g) => `<option value="${g}" ${g === s.graphics ? 'selected' : ''}>${g[0].toUpperCase() + g.slice(1)}</option>`).join('')}</select></label>
           <label><input type="checkbox" id="set-retro" ${s.retro ? 'checked' : ''}> Retro pixel mode (P)</label>
-          <label><input type="checkbox" id="set-shake" ${s.shake ? 'checked' : ''}> Screen shake</label>
+          <label>Screen shake <input type="range" id="set-shake" min="0" max="100" value="${pct(s.shake)}"></label>
+          <label>Controller rumble <input type="range" id="set-rumble" min="0" max="100" value="${pct(s.rumble)}"></label>
         </div>`;
       const pick = await this.choose('SETTINGS', [{ label: 'Controls…', value: 'controls' }, { label: 'Back', value: 'back' }], {
         body,
@@ -132,7 +133,8 @@ export class Menus {
             s.sfx = Number(val('set-sfx').value) / 100;
             s.graphics = val('set-graphics').value as Graphics;
             s.retro = val('set-retro').checked;
-            s.shake = val('set-shake').checked;
+            s.shake = Number(val('set-shake').value) / 100;
+            s.rumble = Number(val('set-rumble').value) / 100;
             onChange(s);
           });
         },
