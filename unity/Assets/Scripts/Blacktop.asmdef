@@ -1,0 +1,6 @@
+{
+  "name": "Blacktop",
+  "rootNamespace": "Blacktop",
+  "references": ["Unity.InputSystem"],
+  "autoReferenced": true
+}

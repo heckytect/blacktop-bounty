@@ -305,9 +305,9 @@ Checks: `tests/feel.test.ts` (tiers, hit-stop release, trauma decay, reduced-mot
 
 ## 11. First two weeks of the port (PP kickoff)
 
-1. Install Unity 6.3 LTS with the Windows, Mac, iOS and tvOS build modules; create `unity/` (URP 3D template), Git LFS rules and a Unity `.gitignore`.
-2. Check the `[VERIFY]` items: Unity Personal revenue limit, FMOD indie licence, current Apple Arcade requirements and pitch process, Apple size rules.
-3. Data importer: export the TS vehicle, weapon, ability and arena data to JSON and generate ScriptableObjects.
-4. Ray-cast vehicle on a `Rigidbody` with one car on the Proving Ground greybox; tune against the web build's handling course.
-5. Port `Feel` and the chase camera; confirm the tier numbers with an EditMode test.
-6. First CI build for Windows and Mac, and a TestFlight build on one iPhone and one Apple TV.
+1. [~] `unity/` skeleton done (package manifest, project version, `.gitignore`, LFS rules, setup steps in [unity/README.md](unity/README.md)). **Blocked on you:** free ~60 GB of disk (7.6 GB free on 2026-11-13), install Git LFS, Unity Hub and Unity 6.3 LTS with the four build modules, and Xcode.
+2. [ ] Check the `[VERIFY]` items: Unity Personal revenue limit, FMOD indie licence, current Apple Arcade requirements and pitch process, Apple size rules.
+3. [x] Data export: `tools/export-unity-data.ts` → `unity/Assets/Resources/Data/game.json` (12 vehicles with derived stats, wheels and parts in Unity's frame, feel tiers, gears), read by `GameData`. Weapons, abilities and arenas follow when combat is ported. ScriptableObjects wait until per-car tuning needs the Inspector.
+4. [~] `RaycastVehicle` (Bullet/Rapier suspension, grip, brake, jump, anti-roll, auto-recover) and the `ProvingGround` test bed are written. Not compiled or driven yet: needs Unity. Tuning against the web course comes next.
+5. [~] `Feel`, `FeelRunner` (time scale, rumble) and `ChaseCamera` ported, with EditMode tests (`FeelTests`, `DataTests`) mirroring the web tests. Not run yet: needs Unity.
+6. [ ] First CI build for Windows and Mac, and a TestFlight build on one iPhone and one Apple TV.

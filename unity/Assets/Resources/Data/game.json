@@ -1,0 +1,1717 @@
+{
+ "version": 1,
+ "gravity": -20,
+ "suspensionRest": 0.35,
+ "gears": [
+  8,
+  15,
+  23,
+  32,
+  44
+ ],
+ "tiers": [
+  {
+   "name": "small",
+   "trauma": 0.1,
+   "stop": 0,
+   "slow": 0,
+   "strong": 0.1,
+   "weak": 0.3,
+   "rumbleMs": 60
+  },
+  {
+   "name": "medium",
+   "trauma": 0.35,
+   "stop": 0.04,
+   "slow": 0,
+   "strong": 0.4,
+   "weak": 0.6,
+   "rumbleMs": 120
+  },
+  {
+   "name": "large",
+   "trauma": 0.8,
+   "stop": 0.11,
+   "slow": 0.15,
+   "strong": 1,
+   "weak": 1,
+   "rumbleMs": 300
+  }
+ ],
+ "vehicles": [
+  {
+   "id": "dust-devil",
+   "name": "Dust Devil",
+   "driver": "Rosa \"Rattler\" Quintero",
+   "cls": "1971 muscle coupe",
+   "armor": 3,
+   "speed": 4,
+   "handling": 3,
+   "hpScale": 1.1,
+   "half": {
+    "x": 0.95,
+    "y": 0.45,
+    "z": 2
+   },
+   "wheelR": 0.42,
+   "color": "#e07a2b",
+   "ability": "sidewinder",
+   "abilityName": "Sidewinder Volley",
+   "chargeTime": 30,
+   "aiRange": 70,
+   "aiStyle": "aggressive",
+   "stats": {
+    "maxHp": 198.00000000000003,
+    "topSpeed": 45,
+    "mass": 1000,
+    "accel": 9,
+    "grip": 2.6,
+    "maxSteer": 0.6
+   },
+   "wheels": [
+    {
+     "pos": {
+      "x": -0.95,
+      "y": -0.7,
+      "z": 1.35
+     },
+     "front": true
+    },
+    {
+     "pos": {
+      "x": 0.95,
+      "y": -0.7,
+      "z": 1.35
+     },
+     "front": true
+    },
+    {
+     "pos": {
+      "x": -0.95,
+      "y": -0.7,
+      "z": -1.3
+     },
+     "front": false
+    },
+    {
+     "pos": {
+      "x": 0.95,
+      "y": -0.7,
+      "z": -1.3
+     },
+     "front": false
+    }
+   ],
+   "parts": [
+    {
+     "size": {
+      "x": 1.9,
+      "y": 0.9,
+      "z": 4
+     },
+     "pos": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+     },
+     "color": "#e07a2b",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 1.6,
+      "y": 0.55,
+      "z": 1.7
+     },
+     "pos": {
+      "x": 0,
+      "y": 0.72,
+      "z": -0.3
+     },
+     "color": "#3a6f80",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 0.5,
+      "y": 0.18,
+      "z": 0.8
+     },
+     "pos": {
+      "x": 0,
+      "y": 0.54,
+      "z": 1.1
+     },
+     "color": "#222222",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 1.9,
+      "y": 0.12,
+      "z": 0.1
+     },
+     "pos": {
+      "x": 0,
+      "y": 0.5,
+      "z": -2
+     },
+     "color": "#222222",
+     "glow": false
+    }
+   ]
+  },
+  {
+   "id": "big-iron",
+   "name": "Big Iron",
+   "driver": "Earl Tubbs",
+   "cls": "18-wheel semi cab",
+   "armor": 5,
+   "speed": 1,
+   "handling": 1,
+   "hpScale": 0.9,
+   "half": {
+    "x": 1.2,
+    "y": 0.6,
+    "z": 3
+   },
+   "wheelR": 0.6,
+   "color": "#3d5a80",
+   "ability": "jackknife",
+   "abilityName": "Jackknife",
+   "chargeTime": 30,
+   "aiRange": 7,
+   "aiStyle": "rammer",
+   "stats": {
+    "maxHp": 216,
+    "topSpeed": 30,
+    "mass": 1500,
+    "accel": 6,
+    "grip": 2,
+    "maxSteer": 0.5
+   },
+   "wheels": [
+    {
+     "pos": {
+      "x": -1.2,
+      "y": -0.85,
+      "z": 2.35
+     },
+     "front": true
+    },
+    {
+     "pos": {
+      "x": 1.2,
+      "y": -0.85,
+      "z": 2.35
+     },
+     "front": true
+    },
+    {
+     "pos": {
+      "x": -1.2,
+      "y": -0.85,
+      "z": -2.3
+     },
+     "front": false
+    },
+    {
+     "pos": {
+      "x": 1.2,
+      "y": -0.85,
+      "z": -2.3
+     },
+     "front": false
+    }
+   ],
+   "parts": [
+    {
+     "size": {
+      "x": 2.4,
+      "y": 1.2,
+      "z": 6
+     },
+     "pos": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+     },
+     "color": "#2b3f5c",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 2.4,
+      "y": 1.6,
+      "z": 2.2
+     },
+     "pos": {
+      "x": 0,
+      "y": 1.4,
+      "z": 1.7
+     },
+     "color": "#3d5a80",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 2,
+      "y": 0.7,
+      "z": 0.1
+     },
+     "pos": {
+      "x": 0,
+      "y": 1.6,
+      "z": 2.81
+     },
+     "color": "#3a6f80",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 0.2,
+      "y": 1.8,
+      "z": 0.2
+     },
+     "pos": {
+      "x": 1.05,
+      "y": 2,
+      "z": 0.5
+     },
+     "color": "#c9ccd1",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 0.2,
+      "y": 1.8,
+      "z": 0.2
+     },
+     "pos": {
+      "x": -1.05,
+      "y": 2,
+      "z": 0.5
+     },
+     "color": "#c9ccd1",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 2.3,
+      "y": 0.5,
+      "z": 0.2
+     },
+     "pos": {
+      "x": 0,
+      "y": -0.1,
+      "z": 3.05
+     },
+     "color": "#c9ccd1",
+     "glow": false
+    }
+   ]
+  },
+  {
+   "id": "halo-hearse",
+   "name": "Halo Hearse",
+   "driver": "Father Ignatius Crowe",
+   "cls": "Black 1968 hearse",
+   "armor": 4,
+   "speed": 2,
+   "handling": 2,
+   "hpScale": 1,
+   "half": {
+    "x": 1,
+    "y": 0.45,
+    "z": 2.6
+   },
+   "wheelR": 0.44,
+   "color": "#1d1b22",
+   "ability": "lastRites",
+   "abilityName": "Last Rites",
+   "chargeTime": 28,
+   "aiRange": 0,
+   "aiStyle": "hitAndRun",
+   "stats": {
+    "maxHp": 210,
+    "topSpeed": 35,
+    "mass": 1250,
+    "accel": 7,
+    "grip": 2.3,
+    "maxSteer": 0.55
+   },
+   "wheels": [
+    {
+     "pos": {
+      "x": -1,
+      "y": -0.7,
+      "z": 1.9500000000000002
+     },
+     "front": true
+    },
+    {
+     "pos": {
+      "x": 1,
+      "y": -0.7,
+      "z": 1.9500000000000002
+     },
+     "front": true
+    },
+    {
+     "pos": {
+      "x": -1,
+      "y": -0.7,
+      "z": -1.9000000000000001
+     },
+     "front": false
+    },
+    {
+     "pos": {
+      "x": 1,
+      "y": -0.7,
+      "z": -1.9000000000000001
+     },
+     "front": false
+    }
+   ],
+   "parts": [
+    {
+     "size": {
+      "x": 2,
+      "y": 0.9,
+      "z": 5.2
+     },
+     "pos": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+     },
+     "color": "#1d1b22",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 1.85,
+      "y": 0.85,
+      "z": 3.6
+     },
+     "pos": {
+      "x": 0,
+      "y": 0.87,
+      "z": -0.6
+     },
+     "color": "#2a2730",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 1.86,
+      "y": 0.5,
+      "z": 0.9
+     },
+     "pos": {
+      "x": 0,
+      "y": 0.75,
+      "z": 0.9
+     },
+     "color": "#3a6f80",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 1,
+      "y": 0.06,
+      "z": 1
+     },
+     "pos": {
+      "x": 0,
+      "y": 1.75,
+      "z": -0.6
+     },
+     "color": "#ffd25a",
+     "glow": true
+    }
+   ]
+  },
+  {
+   "id": "mojave-moth",
+   "name": "Mojave Moth",
+   "driver": "Lily Sato",
+   "cls": "Dune buggy",
+   "armor": 1,
+   "speed": 5,
+   "handling": 5,
+   "hpScale": 1.25,
+   "half": {
+    "x": 0.85,
+    "y": 0.35,
+    "z": 1.6
+   },
+   "wheelR": 0.5,
+   "color": "#e8c547",
+   "ability": "blink",
+   "abilityName": "Blink Boost",
+   "chargeTime": 25,
+   "aiRange": 30,
+   "aiStyle": "hitAndRun",
+   "stats": {
+    "maxHp": 150,
+    "topSpeed": 50,
+    "mass": 500,
+    "accel": 10,
+    "grip": 3.2,
+    "maxSteer": 0.7
+   },
+   "wheels": [
+    {
+     "pos": {
+      "x": -0.85,
+      "y": -0.6,
+      "z": 0.9500000000000001
+     },
+     "front": true
+    },
+    {
+     "pos": {
+      "x": 0.85,
+      "y": -0.6,
+      "z": 0.9500000000000001
+     },
+     "front": true
+    },
+    {
+     "pos": {
+      "x": -0.85,
+      "y": -0.6,
+      "z": -0.9000000000000001
+     },
+     "front": false
+    },
+    {
+     "pos": {
+      "x": 0.85,
+      "y": -0.6,
+      "z": -0.9000000000000001
+     },
+     "front": false
+    }
+   ],
+   "parts": [
+    {
+     "size": {
+      "x": 1.7,
+      "y": 0.5,
+      "z": 3.2
+     },
+     "pos": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+     },
+     "color": "#e8c547",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 0.08,
+      "y": 0.8,
+      "z": 0.08
+     },
+     "pos": {
+      "x": 0.6,
+      "y": 0.65,
+      "z": 0.3
+     },
+     "color": "#222222",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 0.08,
+      "y": 0.8,
+      "z": 0.08
+     },
+     "pos": {
+      "x": -0.6,
+      "y": 0.65,
+      "z": 0.3
+     },
+     "color": "#222222",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 0.08,
+      "y": 0.8,
+      "z": 0.08
+     },
+     "pos": {
+      "x": 0.6,
+      "y": 0.65,
+      "z": -0.6
+     },
+     "color": "#222222",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 0.08,
+      "y": 0.8,
+      "z": 0.08
+     },
+     "pos": {
+      "x": -0.6,
+      "y": 0.65,
+      "z": -0.6
+     },
+     "color": "#222222",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 1.3,
+      "y": 0.08,
+      "z": 1
+     },
+     "pos": {
+      "x": 0,
+      "y": 1.05,
+      "z": -0.15
+     },
+     "color": "#222222",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 1,
+      "y": 0.45,
+      "z": 0.7
+     },
+     "pos": {
+      "x": 0,
+      "y": 0.4,
+      "z": -1.2
+     },
+     "color": "#555555",
+     "glow": false
+    }
+   ]
+  },
+  {
+   "id": "iron-prairie",
+   "name": "Iron Prairie",
+   "driver": "Hank \"Tractor\" Bodine",
+   "cls": "Armored farm tractor",
+   "armor": 4,
+   "speed": 1,
+   "handling": 2,
+   "hpScale": 1,
+   "half": {
+    "x": 1,
+    "y": 0.6,
+    "z": 1.9
+   },
+   "wheelR": 0.65,
+   "color": "#b8312f",
+   "ability": "harvester",
+   "abilityName": "Harvester",
+   "chargeTime": 30,
+   "aiRange": 12,
+   "aiStyle": "rammer",
+   "stats": {
+    "maxHp": 210,
+    "topSpeed": 30,
+    "mass": 1250,
+    "accel": 6,
+    "grip": 2.3,
+    "maxSteer": 0.55
+   },
+   "wheels": [
+    {
+     "pos": {
+      "x": -1,
+      "y": -0.85,
+      "z": 1.25
+     },
+     "front": true
+    },
+    {
+     "pos": {
+      "x": 1,
+      "y": -0.85,
+      "z": 1.25
+     },
+     "front": true
+    },
+    {
+     "pos": {
+      "x": -1,
+      "y": -0.85,
+      "z": -1.2
+     },
+     "front": false
+    },
+    {
+     "pos": {
+      "x": 1,
+      "y": -0.85,
+      "z": -1.2
+     },
+     "front": false
+    }
+   ],
+   "parts": [
+    {
+     "size": {
+      "x": 2,
+      "y": 1,
+      "z": 3.8
+     },
+     "pos": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+     },
+     "color": "#7a1f1d",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 1,
+      "y": 0.6,
+      "z": 1.7
+     },
+     "pos": {
+      "x": 0,
+      "y": 0.8,
+      "z": 0.9
+     },
+     "color": "#b8312f",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 1.5,
+      "y": 1.3,
+      "z": 1.1
+     },
+     "pos": {
+      "x": 0,
+      "y": 1.15,
+      "z": -0.9
+     },
+     "color": "#3a6f80",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 1.7,
+      "y": 0.1,
+      "z": 1.2
+     },
+     "pos": {
+      "x": 0,
+      "y": 1.85,
+      "z": -0.9
+     },
+     "color": "#b8312f",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 0.15,
+      "y": 1.3,
+      "z": 0.15
+     },
+     "pos": {
+      "x": 0.3,
+      "y": 1.6,
+      "z": 0.7
+     },
+     "color": "#222222",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 2.3,
+      "y": 0.7,
+      "z": 0.3
+     },
+     "pos": {
+      "x": 0,
+      "y": -0.1,
+      "z": 2.05
+     },
+     "color": "#555555",
+     "glow": false
+    }
+   ]
+  },
+  {
+   "id": "disco-inferno",
+   "name": "Disco Inferno",
+   "driver": "Vince Valentino",
+   "cls": "1976 custom van",
+   "armor": 3,
+   "speed": 3,
+   "handling": 3,
+   "hpScale": 1,
+   "half": {
+    "x": 1.05,
+    "y": 0.5,
+    "z": 2.3
+   },
+   "wheelR": 0.45,
+   "color": "#8e44ad",
+   "ability": "mirrorBall",
+   "abilityName": "Mirror Ball",
+   "chargeTime": 32,
+   "aiRange": 40,
+   "aiStyle": "aggressive",
+   "stats": {
+    "maxHp": 180,
+    "topSpeed": 40,
+    "mass": 1000,
+    "accel": 8,
+    "grip": 2.6,
+    "maxSteer": 0.6
+   },
+   "wheels": [
+    {
+     "pos": {
+      "x": -1.05,
+      "y": -0.75,
+      "z": 1.65
+     },
+     "front": true
+    },
+    {
+     "pos": {
+      "x": 1.05,
+      "y": -0.75,
+      "z": 1.65
+     },
+     "front": true
+    },
+    {
+     "pos": {
+      "x": -1.05,
+      "y": -0.75,
+      "z": -1.5999999999999999
+     },
+     "front": false
+    },
+    {
+     "pos": {
+      "x": 1.05,
+      "y": -0.75,
+      "z": -1.5999999999999999
+     },
+     "front": false
+    }
+   ],
+   "parts": [
+    {
+     "size": {
+      "x": 2.1,
+      "y": 1,
+      "z": 4.6
+     },
+     "pos": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+     },
+     "color": "#8e44ad",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 2.05,
+      "y": 1,
+      "z": 3.4
+     },
+     "pos": {
+      "x": 0,
+      "y": 1,
+      "z": -0.5
+     },
+     "color": "#8e44ad",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 2.07,
+      "y": 0.15,
+      "z": 3.42
+     },
+     "pos": {
+      "x": 0,
+      "y": 0.85,
+      "z": -0.5
+     },
+     "color": "#ff9a3c",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 1.8,
+      "y": 0.6,
+      "z": 0.1
+     },
+     "pos": {
+      "x": 0,
+      "y": 1.05,
+      "z": 1.2
+     },
+     "color": "#3a6f80",
+     "glow": false
+    }
+   ]
+  },
+  {
+   "id": "sheriff-9",
+   "name": "Sheriff 9",
+   "driver": "Deputy Mae Holloway",
+   "cls": "Interceptor cruiser",
+   "armor": 3,
+   "speed": 4,
+   "handling": 4,
+   "hpScale": 1,
+   "half": {
+    "x": 0.95,
+    "y": 0.45,
+    "z": 2.2
+   },
+   "wheelR": 0.42,
+   "color": "#f2f2f2",
+   "ability": "roadblock",
+   "abilityName": "Roadblock",
+   "chargeTime": 32,
+   "aiRange": 15,
+   "aiStyle": "aggressive",
+   "stats": {
+    "maxHp": 180,
+    "topSpeed": 45,
+    "mass": 1000,
+    "accel": 9,
+    "grip": 2.9,
+    "maxSteer": 0.65
+   },
+   "wheels": [
+    {
+     "pos": {
+      "x": -0.95,
+      "y": -0.7,
+      "z": 1.5500000000000003
+     },
+     "front": true
+    },
+    {
+     "pos": {
+      "x": 0.95,
+      "y": -0.7,
+      "z": 1.5500000000000003
+     },
+     "front": true
+    },
+    {
+     "pos": {
+      "x": -0.95,
+      "y": -0.7,
+      "z": -1.5000000000000002
+     },
+     "front": false
+    },
+    {
+     "pos": {
+      "x": 0.95,
+      "y": -0.7,
+      "z": -1.5000000000000002
+     },
+     "front": false
+    }
+   ],
+   "parts": [
+    {
+     "size": {
+      "x": 1.9,
+      "y": 0.9,
+      "z": 4.4
+     },
+     "pos": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+     },
+     "color": "#f2f2f2",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 1.92,
+      "y": 0.5,
+      "z": 1.6
+     },
+     "pos": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+     },
+     "color": "#222222",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 1.7,
+      "y": 0.55,
+      "z": 1.9
+     },
+     "pos": {
+      "x": 0,
+      "y": 0.72,
+      "z": -0.3
+     },
+     "color": "#3a6f80",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 0.6,
+      "y": 0.15,
+      "z": 0.3
+     },
+     "pos": {
+      "x": -0.35,
+      "y": 1.07,
+      "z": -0.3
+     },
+     "color": "#ff2a2a",
+     "glow": true
+    },
+    {
+     "size": {
+      "x": 0.6,
+      "y": 0.15,
+      "z": 0.3
+     },
+     "pos": {
+      "x": 0.35,
+      "y": 1.07,
+      "z": -0.3
+     },
+     "color": "#2a6bff",
+     "glow": true
+    }
+   ]
+  },
+  {
+   "id": "thunder-pony",
+   "name": "Thunder Pony",
+   "driver": "Joey \"Gears\" Nakamura",
+   "cls": "Chopper + sidecar gun",
+   "armor": 1,
+   "speed": 5,
+   "handling": 4,
+   "hpScale": 1.3,
+   "half": {
+    "x": 0.85,
+    "y": 0.4,
+    "z": 1.6
+   },
+   "wheelR": 0.45,
+   "color": "#2b2b2b",
+   "ability": "wheelie",
+   "abilityName": "Wheelie Barrage",
+   "chargeTime": 28,
+   "aiRange": 60,
+   "aiStyle": "hitAndRun",
+   "stats": {
+    "maxHp": 156,
+    "topSpeed": 50,
+    "mass": 500,
+    "accel": 10,
+    "grip": 2.9,
+    "maxSteer": 0.65
+   },
+   "wheels": [
+    {
+     "pos": {
+      "x": -0.85,
+      "y": -0.65,
+      "z": 0.9500000000000001
+     },
+     "front": true
+    },
+    {
+     "pos": {
+      "x": 0.85,
+      "y": -0.65,
+      "z": 0.9500000000000001
+     },
+     "front": true
+    },
+    {
+     "pos": {
+      "x": -0.85,
+      "y": -0.65,
+      "z": -0.9000000000000001
+     },
+     "front": false
+    },
+    {
+     "pos": {
+      "x": 0.85,
+      "y": -0.65,
+      "z": -0.9000000000000001
+     },
+     "front": false
+    }
+   ],
+   "parts": [
+    {
+     "size": {
+      "x": 0.35,
+      "y": 0.35,
+      "z": 2.6
+     },
+     "pos": {
+      "x": -0.4,
+      "y": 0.1,
+      "z": 0
+     },
+     "color": "#c9ccd1",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 0.45,
+      "y": 0.35,
+      "z": 0.8
+     },
+     "pos": {
+      "x": -0.4,
+      "y": 0.45,
+      "z": 0.3
+     },
+     "color": "#d23a3a",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 0.45,
+      "y": 0.9,
+      "z": 0.5
+     },
+     "pos": {
+      "x": -0.4,
+      "y": 0.85,
+      "z": -0.3
+     },
+     "color": "#5b3a26",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 0.9,
+      "y": 0.5,
+      "z": 0.1
+     },
+     "pos": {
+      "x": -0.4,
+      "y": 0.7,
+      "z": 0.9
+     },
+     "color": "#c9ccd1",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 0.8,
+      "y": 0.55,
+      "z": 1.7
+     },
+     "pos": {
+      "x": 0.45,
+      "y": 0.05,
+      "z": -0.1
+     },
+     "color": "#d23a3a",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 0.15,
+      "y": 0.15,
+      "z": 1
+     },
+     "pos": {
+      "x": 0.45,
+      "y": 0.45,
+      "z": 0.7
+     },
+     "color": "#222222",
+     "glow": false
+    }
+   ]
+  },
+  {
+   "id": "cactus-jack",
+   "name": "Cactus Jack",
+   "driver": "Delores \"Ma\" Pickett",
+   "cls": "Lifted 4x4 pickup",
+   "armor": 4,
+   "speed": 3,
+   "handling": 2,
+   "hpScale": 1,
+   "half": {
+    "x": 1.05,
+    "y": 0.5,
+    "z": 2.3
+   },
+   "wheelR": 0.62,
+   "color": "#6f8a3a",
+   "ability": "tumbleweed",
+   "abilityName": "Tumbleweed Barrage",
+   "chargeTime": 32,
+   "aiRange": 35,
+   "aiStyle": "sniper",
+   "stats": {
+    "maxHp": 210,
+    "topSpeed": 40,
+    "mass": 1250,
+    "accel": 8,
+    "grip": 2.3,
+    "maxSteer": 0.55
+   },
+   "wheels": [
+    {
+     "pos": {
+      "x": -1.05,
+      "y": -0.75,
+      "z": 1.65
+     },
+     "front": true
+    },
+    {
+     "pos": {
+      "x": 1.05,
+      "y": -0.75,
+      "z": 1.65
+     },
+     "front": true
+    },
+    {
+     "pos": {
+      "x": -1.05,
+      "y": -0.75,
+      "z": -1.5999999999999999
+     },
+     "front": false
+    },
+    {
+     "pos": {
+      "x": 1.05,
+      "y": -0.75,
+      "z": -1.5999999999999999
+     },
+     "front": false
+    }
+   ],
+   "parts": [
+    {
+     "size": {
+      "x": 2.1,
+      "y": 1,
+      "z": 4.6
+     },
+     "pos": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+     },
+     "color": "#6f8a3a",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 1.95,
+      "y": 0.75,
+      "z": 1.5
+     },
+     "pos": {
+      "x": 0,
+      "y": 0.87,
+      "z": 0.3
+     },
+     "color": "#6f8a3a",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 1.8,
+      "y": 0.5,
+      "z": 0.1
+     },
+     "pos": {
+      "x": 0,
+      "y": 0.9,
+      "z": 1.06
+     },
+     "color": "#3a6f80",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 1.7,
+      "y": 0.15,
+      "z": 0.15
+     },
+     "pos": {
+      "x": 0,
+      "y": 1.4,
+      "z": -0.3
+     },
+     "color": "#ffe14d",
+     "glow": true
+    },
+    {
+     "size": {
+      "x": 0.1,
+      "y": 0.3,
+      "z": 2
+     },
+     "pos": {
+      "x": 1,
+      "y": 0.65,
+      "z": -1.2
+     },
+     "color": "#222222",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 0.1,
+      "y": 0.3,
+      "z": 2
+     },
+     "pos": {
+      "x": -1,
+      "y": 0.65,
+      "z": -1.2
+     },
+     "color": "#222222",
+     "glow": false
+    }
+   ]
+  },
+  {
+   "id": "solar-flare",
+   "name": "Solar Flare",
+   "driver": "Dr. Anton Vesely",
+   "cls": "Experimental rocket car",
+   "armor": 2,
+   "speed": 4,
+   "handling": 3,
+   "hpScale": 1,
+   "half": {
+    "x": 0.9,
+    "y": 0.35,
+    "z": 2.2
+   },
+   "wheelR": 0.4,
+   "color": "#d8d8e0",
+   "ability": "sunLance",
+   "abilityName": "Sun Lance",
+   "chargeTime": 40,
+   "aiRange": 120,
+   "aiStyle": "sniper",
+   "stats": {
+    "maxHp": 150,
+    "topSpeed": 45,
+    "mass": 750,
+    "accel": 9,
+    "grip": 2.6,
+    "maxSteer": 0.6
+   },
+   "wheels": [
+    {
+     "pos": {
+      "x": -0.9,
+      "y": -0.6,
+      "z": 1.5500000000000003
+     },
+     "front": true
+    },
+    {
+     "pos": {
+      "x": 0.9,
+      "y": -0.6,
+      "z": 1.5500000000000003
+     },
+     "front": true
+    },
+    {
+     "pos": {
+      "x": -0.9,
+      "y": -0.6,
+      "z": -1.5000000000000002
+     },
+     "front": false
+    },
+    {
+     "pos": {
+      "x": 0.9,
+      "y": -0.6,
+      "z": -1.5000000000000002
+     },
+     "front": false
+    }
+   ],
+   "parts": [
+    {
+     "size": {
+      "x": 1.8,
+      "y": 0.7,
+      "z": 4.4
+     },
+     "pos": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+     },
+     "color": "#d8d8e0",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 0.8,
+      "y": 0.4,
+      "z": 1.2
+     },
+     "pos": {
+      "x": 0,
+      "y": 0.55,
+      "z": -0.2
+     },
+     "color": "#3a6f80",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 0.08,
+      "y": 0.7,
+      "z": 0.8
+     },
+     "pos": {
+      "x": 0.6,
+      "y": 0.6,
+      "z": -1.9
+     },
+     "color": "#e8b13a",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 0.08,
+      "y": 0.7,
+      "z": 0.8
+     },
+     "pos": {
+      "x": -0.6,
+      "y": 0.6,
+      "z": -1.9
+     },
+     "color": "#e8b13a",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 0.5,
+      "y": 0.5,
+      "z": 0.4
+     },
+     "pos": {
+      "x": 0,
+      "y": 0.1,
+      "z": -2.3
+     },
+     "color": "#ff7a1a",
+     "glow": true
+    },
+    {
+     "size": {
+      "x": 0.12,
+      "y": 0.12,
+      "z": 0.8
+     },
+     "pos": {
+      "x": 0,
+      "y": 0.1,
+      "z": 2.5
+     },
+     "color": "#5ff2ff",
+     "glow": true
+    }
+   ]
+  },
+  {
+   "id": "kingpin",
+   "name": "Kingpin",
+   "driver": "The Proprietor",
+   "cls": "Armored land-yacht limo",
+   "armor": 5,
+   "speed": 3,
+   "handling": 2,
+   "hpScale": 3,
+   "half": {
+    "x": 1.15,
+    "y": 0.55,
+    "z": 3.1
+   },
+   "wheelR": 0.5,
+   "color": "#1c1c22",
+   "ability": "payday",
+   "abilityName": "Payday",
+   "chargeTime": 18,
+   "aiRange": 60,
+   "aiStyle": "aggressive",
+   "stats": {
+    "maxHp": 720,
+    "topSpeed": 40,
+    "mass": 1500,
+    "accel": 8,
+    "grip": 2.3,
+    "maxSteer": 0.55
+   },
+   "wheels": [
+    {
+     "pos": {
+      "x": -1.15,
+      "y": -0.8,
+      "z": 2.45
+     },
+     "front": true
+    },
+    {
+     "pos": {
+      "x": 1.15,
+      "y": -0.8,
+      "z": 2.45
+     },
+     "front": true
+    },
+    {
+     "pos": {
+      "x": -1.15,
+      "y": -0.8,
+      "z": -2.4000000000000004
+     },
+     "front": false
+    },
+    {
+     "pos": {
+      "x": 1.15,
+      "y": -0.8,
+      "z": -2.4000000000000004
+     },
+     "front": false
+    }
+   ],
+   "parts": [
+    {
+     "size": {
+      "x": 2.3,
+      "y": 1.1,
+      "z": 6.2
+     },
+     "pos": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+     },
+     "color": "#1c1c22",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 2.1,
+      "y": 0.6,
+      "z": 3.2
+     },
+     "pos": {
+      "x": 0,
+      "y": 0.85,
+      "z": -0.4
+     },
+     "color": "#3a6f80",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 2.34,
+      "y": 0.12,
+      "z": 6.24
+     },
+     "pos": {
+      "x": 0,
+      "y": 0.2,
+      "z": 0
+     },
+     "color": "#d4af37",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 0.3,
+      "y": 0.3,
+      "z": 0.4
+     },
+     "pos": {
+      "x": 0,
+      "y": 0.7,
+      "z": 3
+     },
+     "color": "#ffd23f",
+     "glow": true
+    },
+    {
+     "size": {
+      "x": 0.8,
+      "y": 0.4,
+      "z": 1
+     },
+     "pos": {
+      "x": 0,
+      "y": 1.35,
+      "z": -0.4
+     },
+     "color": "#2a2a30",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 0.12,
+      "y": 0.12,
+      "z": 1
+     },
+     "pos": {
+      "x": 0,
+      "y": 1.45,
+      "z": 0.3
+     },
+     "color": "#d4af37",
+     "glow": false
+    }
+   ]
+  },
+  {
+   "id": "drone",
+   "name": "Collector Drone",
+   "driver": "Repo Unit",
+   "cls": "Remote repo car",
+   "armor": 1,
+   "speed": 4,
+   "handling": 4,
+   "hpScale": 0.6,
+   "half": {
+    "x": 0.75,
+    "y": 0.3,
+    "z": 1.3
+   },
+   "wheelR": 0.32,
+   "color": "#d4af37",
+   "ability": "none",
+   "abilityName": "—",
+   "chargeTime": 999,
+   "aiRange": 0,
+   "aiStyle": "rammer",
+   "stats": {
+    "maxHp": 72,
+    "topSpeed": 45,
+    "mass": 500,
+    "accel": 9,
+    "grip": 2.9,
+    "maxSteer": 0.65
+   },
+   "wheels": [
+    {
+     "pos": {
+      "x": -0.75,
+      "y": -0.5499999999999999,
+      "z": 0.65
+     },
+     "front": true
+    },
+    {
+     "pos": {
+      "x": 0.75,
+      "y": -0.5499999999999999,
+      "z": 0.65
+     },
+     "front": true
+    },
+    {
+     "pos": {
+      "x": -0.75,
+      "y": -0.5499999999999999,
+      "z": -0.6000000000000001
+     },
+     "front": false
+    },
+    {
+     "pos": {
+      "x": 0.75,
+      "y": -0.5499999999999999,
+      "z": -0.6000000000000001
+     },
+     "front": false
+    }
+   ],
+   "parts": [
+    {
+     "size": {
+      "x": 1.5,
+      "y": 0.6,
+      "z": 2.6
+     },
+     "pos": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+     },
+     "color": "#d4af37",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 1,
+      "y": 0.35,
+      "z": 1
+     },
+     "pos": {
+      "x": 0,
+      "y": 0.45,
+      "z": -0.2
+     },
+     "color": "#2a2a30",
+     "glow": false
+    },
+    {
+     "size": {
+      "x": 0.6,
+      "y": 0.15,
+      "z": 0.1
+     },
+     "pos": {
+      "x": 0,
+      "y": 0.1,
+      "z": 1.31
+     },
+     "color": "#ff2a2a",
+     "glow": true
+    }
+   ]
+  }
+ ]
+}
